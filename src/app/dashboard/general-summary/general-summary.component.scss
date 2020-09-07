@@ -1,0 +1,46 @@
+.container {
+  .summary {
+    font-size: 2rem;
+  }
+  .employee-report {
+    display: grid;
+    justify-content: center;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-gap: 1.6rem;
+    margin-bottom: 2rem;
+    .item {
+      text-align: center;
+      text-transform: uppercase;
+      background-color: #673ab7;
+      color: #fff;
+      border-radius: 0.6rem;
+      padding: 1.6rem;
+      &.total-employees {
+        span.value {
+          font-size: 4.2rem;
+        }
+      }
+      span.title {
+        margin-bottom: 1.6rem;
+        display: flex;
+        justify-content: center;
+        margin-top: 0.8rem;
+        font-size: 1.6rem;
+      }
+      span.value {
+        font-size: 3.2rem;
+      }
+      span {
+        color: #ffcc00;
+      }
+    }
+    .mat-spinner-color::ng-deep circle {
+      stroke: #ffcc00 !important;
+    }
+    .spinner-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+}

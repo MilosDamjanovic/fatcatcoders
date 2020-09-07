@@ -1,0 +1,28 @@
+<div class="container">
+  <h1 class="summary"> General summary </h1>
+  <div class="employee-report">
+    <div class="item total-employees">
+      <span class="title"> Total number of employees </span>
+      <span class="value"> {{generalSummary?.totalNumberOfEmployees}}</span>
+      <mat-spinner diameter="50" mode="indeterminate" style="margin:0 auto;" class="mat-spinner-color" *ngIf="isLoading"></mat-spinner>
+    </div>
+    <div class="item clocked-in">
+      <span class="title"> Total ClockedIn summary </span>
+      <span class="value"> {{ generalSummary?.totalWorkSummary.totalClockedInTime }} </span>
+      <mat-spinner diameter="50" mode="indeterminate" style="margin:0 auto;" class="mat-spinner-color" *ngIf="isLoading"></mat-spinner>
+    </div>
+    <div class="item productive">
+      <span class="title"> Total Productive time</span>
+      <span class="value"> {{ generalSummary?.totalWorkSummary.totalProductiveTime }} </span>
+      <mat-spinner diameter="50" mode="indeterminate" style="margin:0 auto;" class="mat-spinner-color" *ngIf="isLoading">
+      </mat-spinner>
+     </div>
+    <div class="item unproductive">
+      <span class="title">Total Unproductive time</span>
+      <span class="value">
+        {{generalSummary?.totalWorkSummary.totalUnProductiveTime}}
+      </span>
+      <mat-spinner diameter="50" mode="indeterminate" style="margin:0 auto;" class="mat-spinner-color" *ngIf="isLoading"></mat-spinner>
+    </div>
+  </div>
+</div>

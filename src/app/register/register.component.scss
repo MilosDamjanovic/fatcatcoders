@@ -1,0 +1,23 @@
+.register-container {
+  margin: 0 auto;
+  width: 50%;
+  .register-card {
+    margin: 3.2rem 1.6rem;
+  }
+  .regiser-form {
+    margin-top: 1.6rem;
+  }
+  mat-toolbar {
+    width: auto;
+    margin: 3.2rem 1.6rem;
+    background-color: #673ab7;
+    color: #ffcc00;
+  }
+  .example-section {
+    margin-top: 1.6rem;
+    margin-bottom: 1.6rem;
+    mat-radio-button {
+      margin-right: 0.4rem;
+    }
+  }
+}

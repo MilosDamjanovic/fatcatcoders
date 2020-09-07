@@ -1,0 +1,31 @@
+<div class="dashboard-container">
+
+  <!-- SECTION 1 GENERAL SUMMARY START  -->
+  <div class="general-summary">
+    <ttd-general-summary
+      [totalNumberOfEmployees]="totalWorkers"
+      [totalWorkSummary]="cachedTracks">
+    </ttd-general-summary>
+  </div>
+  <!-- SECTION 1 GENERAL SUMMARY END  -->
+  <div class="employee-data">
+    <!-- SECTION 2 EMPLOYEE TABLE START -->
+    <div class="employee-table">
+      <ttd-employee-table [employees]="employeeTableData$ | async"
+        (employeeSelected)="selectEmployee($event)"
+        (employeeNewTrackCreated)="addNewTrack($event)">
+      </ttd-employee-table>
+
+    </div>
+    <!-- SECTION 2 EMPLOYEE TABLE END -->
+
+    <!-- SECTION 3 EMPLOYEE PROFILE PAGE START  -->
+    <div class="employee-page" *ngIf="selectedEmployee">
+      <ttd-employee-profile [selectedEmployee]="selectedEmployee"
+        (employeeUpdated)="updateUserInfo($event)"
+        (newTrackCreated)="addNewTrack($event)">
+      </ttd-employee-profile>
+    </div>
+    <!-- SECTION 3 EMPLOYEE PROFILE PAGE END -->
+  </div>
+</div>

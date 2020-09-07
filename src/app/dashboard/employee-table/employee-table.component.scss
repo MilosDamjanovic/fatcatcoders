@@ -1,0 +1,21 @@
+.search-box {
+  margin-bottom: 1.6rem;
+  padding: 0.8rem 1.6rem;
+}
+.table-summary ::ng-deep {
+  .table-data {
+    width: 50%;
+    margin-left: 1.6rem;
+  }
+  .mat-paginator-container {
+    width: 50%;
+  }
+  mat-table {
+    td.mat-cell {
+      text-align: center;
+    }
+    th.mat-header-cell:last-child {
+      text-align: center;
+    }
+  }
+}

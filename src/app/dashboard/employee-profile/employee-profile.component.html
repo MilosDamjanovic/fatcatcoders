@@ -1,0 +1,96 @@
+<section class="employee-grid">
+  <h2> {{currentEmployee.name}} </h2>
+  <ul class="work-days">
+    <li class="timestamp" *ngFor="let wlds of employeeTracks" (click)="onEmployeeClick(wlds)">
+      <span class="track-title"> {{wlds.createdAt | date:'MMM d'}} </span>
+    </li>
+    <li class="timestamp" (click)="createNewTrack()"> New Track </li>
+  </ul>
+</section>
+
+<div class="employee-profile">
+  <ng-container *ngIf="selectedWorkDay">
+    <mat-card>
+      <mat-card-title>
+        <span class="name">
+          {{currentEmployee?.name}}
+        </span>
+      </mat-card-title>
+      <form #form="ngForm" id="form" (ngSubmit)="updateStatus(form)">
+        <mat-card-content>
+          <mat-form-field class="full-width" *ngIf="!isNewPressed">
+            <input matInput placeholder="Name" [(ngModel)]="currentEmployee.name" type="text" name="title" required />
+          </mat-form-field>
+          <mat-form-field class="full-width">
+            <input matInput placeholder="Total clocked in time" [disabled]="!isNewPressed"
+              [(ngModel)]="selectedWorkDay.totalClockedInTime" type="text" name="totalClockedInTime" required />
+            <mat-error *ngIf="form.controls['totalClockedInTime']?.errors?.required || selectedWorkDay.totalClockedInTime === 0">
+              Clock in time mustn't be greather than the clock out time.
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field class="full-width">
+            <input matInput placeholder="Total productive time" [disabled]="!isNewPressed"
+              [(ngModel)]="selectedWorkDay.totalProductiveTime" type="text" name="totalProductiveTime" required />
+            <mat-error *ngIf="form.controls['totalProductiveTime']?.errors?.required || selectedWorkDay.totalProductiveTime === 0">
+              Clock in time mustn't be greather than the clock out time.
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field class="full-width">
+            <input matInput placeholder="Total unproductive time" [disabled]="!isNewPressed"
+              [(ngModel)]="selectedWorkDay.totalUnProductiveTime" type="text" name="totalUnProductiveTime" required />
+          </mat-form-field>
+          <mat-error *ngIf="form.controls['totalUnProductiveTime']?.errors?.required || selectedWorkDay.totalUnProductiveTime === 0">
+            Clock in time mustn't be greather than the clock out time.
+          </mat-error>
+          <mat-form-field>
+            <input matInput type="datetime-local" placeholder="Clock in time" [disabled]="!isNewPressed"
+              [(ngModel)]="selectedWorkDay.clockInTime" name="clockInTime" reqired>
+            <mat-error *ngIf="form.controls['clockInTime']?.errors?.clock">
+              Clock in time mustn't be greather than the clock out time.
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field>
+            <input matInput type="datetime-local" placeholder="Clock out time"
+              placeholder="Clock out time" [disabled]="!isNewPressed" [(ngModel)]="selectedWorkDay.clockOutTime"
+              name="clockOutTime" reqired>
+            <mat-error *ngIf="form.controls['clockOutTime']?.errors?.clock">
+              Clock in time mustn't be greather than the clock out time.
+            </mat-error>
+          </mat-form-field>
+          <mat-slide-toggle name="status" [(ngModel)]="currentEmployee.status" [checked]="currentEmployee.status"
+            (change)="changeUserStatus($event)"> Activate/Deactivate
+            Status
+          </mat-slide-toggle>
+        </mat-card-content>
+        <mat-card-actions>
+          <button [disabled]="form.invalid" *ngIf="!isNewPressed" type="submit" mat-raised-button
+            color="primary">Save</button>
+          <button type="button" mat-stroked-button (click)="createNewTrack(form)"> New track </button>
+          <button type="button" color="accent" *ngIf="isNewPressed" mat-raised-button (click)="addNewTrack(form)">
+            Add new Track
+          </button>
+        </mat-card-actions>
+      </form>
+      <button class="top-corner" (click)="closePanel()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-card>
+  </ng-container>
+</div>
+<section class="employee-report">
+
+  <div class="daily-repport">
+    <ttd-employee-report [barChartData]="workDaysChartData.barChartData"
+      [barChartLabel]="workDaysChartData.barChartLabel" [barChartOptions]="barChartOptions"
+      [barChartLegend]="barChartLegend" [barChartType]="barChartType">
+    </ttd-employee-report>
+  </div>
+
+  <div class="aggregate-report">
+    <ttd-employee-report [barChartData]="aggregateEmmployeeChartData.barChartData"
+      [barChartLabel]="aggregateEmmployeeChartData.barChartLabel" [barChartOptions]="aggregateBarChartOptions"
+      [aggregate]="true" [barChartLegend]="barChartLegend" [barChartType]="barChartType">
+    </ttd-employee-report>
+  </div>
+</section>

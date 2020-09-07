@@ -1,0 +1,24 @@
+.top-corner {
+  border: none;
+  background: transparent;
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+.work-days {
+  display: grid;
+  grid-gap: 0.8rem;
+  grid-template-columns: repeat(3, 1fr);
+
+  .timestamp {
+    list-style-type: none;
+    text-align: center;
+    padding: 0.4rem;
+    background-color: #673ab7;
+    color: #ffcc00;
+    border-radius: 0.6rem;
+  }
+}
+.aggregate-report {
+  margin-top: 1.6rem;
+}

@@ -1,0 +1,10 @@
+.dashboard-container {
+  .employee-data {
+    display: flex;
+    .employee-table,
+    .employee-page {
+      padding: .8rem;
+      flex: 45%;
+    }
+  }
+}

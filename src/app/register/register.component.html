@@ -1,0 +1,56 @@
+<section class="register-container">
+  <mat-toolbar>
+    <span>New to Fatcat coders application, please regiser here!</span>
+  </mat-toolbar>
+  <mat-card class="register-card">
+    <mat-card-content>
+      <form class="register-form" [formGroup]="form">
+        <mat-form-field appearance="standard" class="full-width">
+          <mat-label>First Name</mat-label>
+          <input matInput formControlName="fname" placeholder="First name" name="fname" autocomplete="off" required>
+          <mat-error *ngIf="fnameControl.invalid">{{getFullNameErrorMessage()}}</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="standard" class="full-width">
+          <mat-label>Last Name</mat-label>
+          <input matInput formControlName="lname" placeholder="Last Name" name="lname" autocomplete="off" required>
+          <mat-error *ngIf="lnameControl.invalid">{{getFullNameErrorMessage()}}</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="standard" class="full-width">
+          <mat-label>Address</mat-label>
+          <input matInput formControlName="addressLine" placeholder="Address" name="address" autocomplete="off" required>
+          <mat-error *ngIf="addressLineControl.invalid">{{getAddressLineErrorMessage()}}</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="standard" class="full-width">
+          <mat-label>Email</mat-label>
+          <input matInput formControlName="email" placeholder="Email" name="email" autocomplete="off" required>
+          <mat-error *ngIf="emailControl.invalid">{{getEmailErrorMessage()}}</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="standard" class="full-width">
+          <mat-label>Password</mat-label>
+          <input type="password" matInput formControlName="password" placeholder="Password" name="password" required>
+          <mat-error *ngIf="passwordControl.invalid">{{getPasswordErrorMessage()}}</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="standard" class="full-width">
+          <mat-label>Repeat password</mat-label>
+          <input type="password" matInput formControlName="repeatPassword" placeholder="Repeat Password"
+            name="repeatPassword" required>
+          <mat-error *ngIf="form.invalid">{{getRepeatPasswordErrorMessage()}}</mat-error>
+        </mat-form-field>
+        <section class="example-section">
+          <label class="full-width">Gender:</label>
+          <br>
+          <br>
+          <mat-radio-group formControlName="gender">
+            <mat-radio-button class="example-margin" value="1">Male</mat-radio-button>
+            <mat-radio-button class="example-margin" value="2">Female</mat-radio-button>
+            <mat-radio-button class="example-margin" value="3">Other</mat-radio-button>
+          </mat-radio-group>
+          <mat-error *ngIf="genderControl.invalid">{{getGenderErrorMessage()}}</mat-error>
+        </section>
+      </form>
+    </mat-card-content>
+    <mat-card-actions>
+      <button [class.disabled]="!form.valid" mat-raised-button (click)="register()" color="primary">REGISTER</button>
+    </mat-card-actions>
+  </mat-card>
+</section>
