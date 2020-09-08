@@ -524,6 +524,16 @@
       "createdAt": "1950-12-05T03:19:16.627Z",
       "updatedAt": "2017-01-05T04:34:56.914Z",
       "id": 12113080
+    },
+    {
+      "fname": "Miloš",
+      "lname": "Damjanović",
+      "email": "milos.damjanovic064@gmail.com",
+      "password": "Overlord.94",
+      "repeatPassword": "Overlord.94",
+      "addressLine": "Koce Kapetana 8",
+      "gender": "1",
+      "id": 99588973
     }
   ],
   "time-tracks": [

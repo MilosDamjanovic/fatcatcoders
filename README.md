@@ -4,7 +4,7 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 
 ## Development server
 
-Before `ng serve` run `npm run api` to start the mock server.
+Use `npm run start:proxy:mock:server` script in order to start the project with the mocked database.
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
 
