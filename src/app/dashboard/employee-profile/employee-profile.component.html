@@ -23,21 +23,21 @@
           </mat-form-field>
           <mat-form-field class="full-width">
             <input matInput placeholder="Total clocked in time" [disabled]="!isNewPressed"
-              [(ngModel)]="selectedWorkDay.totalClockedInTime" type="text" name="totalClockedInTime" required />
+              [(ngModel)]="selectedWorkDay.totalClockedInTime" type="number" name="totalClockedInTime" required />
             <mat-error *ngIf="form.controls['totalClockedInTime']?.errors?.required || selectedWorkDay.totalClockedInTime === 0">
               Clock in time mustn't be greather than the clock out time.
             </mat-error>
           </mat-form-field>
           <mat-form-field class="full-width">
             <input matInput placeholder="Total productive time" [disabled]="!isNewPressed"
-              [(ngModel)]="selectedWorkDay.totalProductiveTime" type="text" name="totalProductiveTime" required />
+              [(ngModel)]="selectedWorkDay.totalProductiveTime" type="number" name="totalProductiveTime" required />
             <mat-error *ngIf="form.controls['totalProductiveTime']?.errors?.required || selectedWorkDay.totalProductiveTime === 0">
               Clock in time mustn't be greather than the clock out time.
             </mat-error>
           </mat-form-field>
           <mat-form-field class="full-width">
             <input matInput placeholder="Total unproductive time" [disabled]="!isNewPressed"
-              [(ngModel)]="selectedWorkDay.totalUnProductiveTime" type="text" name="totalUnProductiveTime" required />
+              [(ngModel)]="selectedWorkDay.totalUnProductiveTime" type="number" name="totalUnProductiveTime" required />
           </mat-form-field>
           <mat-error *ngIf="form.controls['totalUnProductiveTime']?.errors?.required || selectedWorkDay.totalUnProductiveTime === 0">
             Clock in time mustn't be greather than the clock out time.

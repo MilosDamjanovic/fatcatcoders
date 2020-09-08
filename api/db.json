@@ -10704,26 +10704,15 @@
       "id": 86593625
     },
     {
-      "employeeID": 56726779,
-      "totalClockedInTime": "5",
-      "totalProductiveTime": "6",
-      "totalUnProductiveTime": "1",
-      "createdAt": "2020-09-07T00:27:26.255Z",
-      "clockInTime": "2020-09-09T02:27",
-      "clockOutTime": "2020-09-24T02:27",
-      "userId": "56726779",
+      "employeeID": 69759950,
+      "totalClockedInTime": 5,
+      "totalProductiveTime": 5,
+      "totalUnProductiveTime": 5,
+      "createdAt": "2020-09-08T10:31:19.955Z",
+      "clockInTime": "2020-09-07T12:31",
+      "clockOutTime": "2020-09-08T12:31",
+      "userId": "69759950",
       "id": 99664993
-    },
-    {
-      "employeeID": 56726779,
-      "totalClockedInTime": "5",
-      "totalProductiveTime": "5",
-      "totalUnProductiveTime": "6",
-      "createdAt": "2020-09-07T00:32:05.583Z",
-      "clockInTime": "2020-09-12T02:32",
-      "clockOutTime": "2020-09-27T02:32",
-      "userId": "56726779",
-      "id": 99664994
     }
   ]
 }
