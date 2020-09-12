@@ -1,5 +1,5 @@
 import { ChartsModule } from 'ng2-charts/ng2-charts';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MaterialModule } from './../material.module';
 import { DashboardComponent } from './dashboard.component';
 import { GeneralSummaryComponent } from './general-summary/general-summary.component';
@@ -20,12 +20,13 @@ import { EmployeeReportComponent } from './employee-profile/employee-report/empl
   ],
   imports: [
     CommonModule,
+    ReactiveFormsModule,
     FormsModule,
     DashboardRoutingModule,
     MaterialModule,
     ChartsModule
   ],
   providers: [DatePipe],
-  exports: [DashboardComponent, FormsModule]
+  exports: [DashboardComponent, ReactiveFormsModule, FormsModule]
 })
 export class DashboardModule { }

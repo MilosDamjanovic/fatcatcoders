@@ -2,6 +2,20 @@
   margin-bottom: 1.6rem;
   padding: 0.8rem 1.6rem;
 }
+::ng-deep .mat-datepicker-content {
+  .mat-calendar {
+    float: left;
+  }
+  .container {
+    float: right;
+    .filter-by-example {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+  }
+}
+
 .table-summary ::ng-deep {
   .table-data {
     width: 50%;
