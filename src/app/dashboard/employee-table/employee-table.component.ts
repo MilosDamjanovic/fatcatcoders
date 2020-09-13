@@ -5,6 +5,8 @@ import { Component, OnInit, ViewChild, Input, Output, EventEmitter, ChangeDetect
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatCalendar, MatDateRangePicker } from '@angular/material/datepicker';
+import { MatButton } from '@angular/material/button';
+import { DateAdapter } from '@angular/material/core';
 
 export interface IEmployeeFilter {
   column: string;
@@ -25,20 +27,19 @@ export class EmployeeTableComponent implements OnInit, AfterViewInit {
     }
   }
 
-  constructor() { }
+  constructor(private _dateAdapter: DateAdapter<any>) { }
 
-  private get startDateCtrl(): AbstractControl {
+  public get startDateCtrl(): AbstractControl {
     return this.range.controls.start;
   }
 
-  private get endDateCtrl(): AbstractControl {
+  public get endDateCtrl(): AbstractControl {
     return this.range.controls.end;
   }
   @Output() employeeSelected = new EventEmitter<Employee>();
   @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort: MatSort;
-  @ViewChild('input', { static: true }) input: ElementRef;
-  @ViewChild('picker', { static: false}) datepicker: MatDateRangePicker<Date>;
+  @ViewChild('picker', { static: false }) datepicker: MatDateRangePicker<Date>;
 
   // date range picker
   public range = new FormGroup({
@@ -48,25 +49,29 @@ export class EmployeeTableComponent implements OnInit, AfterViewInit {
 
   date = new Date();
 
+  private isLastClicked = false;
+
   public dataSource = new MatTableDataSource<any>([]);
   public displayedColumns: string[] = ['name', 'totalClockedInTime', 'totalProductiveTime',
     'totalUnProductiveTime', 'productivityRatio', 'edit'];
-   public filter: string;
-   public isLoading = true;
-   public employeeStatus: boolean;
+  public filter: string;
+  public isLoading = true;
+  public employeeStatus: boolean;
   filterValues: any = {};
-
-  public dateToPass;
 
   ngOnInit() {
     this.dataSource.filterPredicate = (data, filter: string) => {
       const accumulator = (currentTerm, key) => {
         return this.nestedFilterCheck(currentTerm, data, key);
       };
+      if (this.startDateCtrl.value && this.endDateCtrl.value) {
+        return data.createdAt >= this.startDateCtrl.value && data.updatedAt <= this.endDateCtrl.value;
+      }
       const dataStr = Object.keys(data).reduce(accumulator, '').toLowerCase();
       const transformedFilter = filter.trim().toLowerCase();
       return dataStr.indexOf(transformedFilter) !== -1;
     };
+    this._dateAdapter.setLocale('en-GB');
   }
 
   applyFilter(filterValue: string | boolean) {
@@ -78,14 +83,6 @@ export class EmployeeTableComponent implements OnInit, AfterViewInit {
     if (this.dataSource.paginator) {
       this.dataSource.paginator.firstPage();
     }
-  }
-
-  getDateFilterPredicate(filterValue: string) {
-    this.dataSource.filterPredicate = (data, filter) => {
-      if (this.startDateCtrl.value && this.endDateCtrl.value) {
-        return data.createdAt >= this.startDateCtrl.value && data.updatedAt <= this.endDateCtrl.value;
-      }
-    };
   }
 
   nestedFilterCheck(search, data, key) {
@@ -110,7 +107,7 @@ export class EmployeeTableComponent implements OnInit, AfterViewInit {
     this.dataSource.filter = '';
   }
 
-  public opened(picker: any) {
+  public opened() {
     const container = document.createElement('div');
     const filterDiv = document.createElement('div');
 
@@ -159,14 +156,6 @@ export class EmployeeTableComponent implements OnInit, AfterViewInit {
     this.employeeSelected.emit({ name, status, id, createdAt, updatedAt, workDays: [] });
   }
 
-  public startDateEmit(event): any {
-    console.log(event.value);
-  }
-
-  public endDateEmit(event): any {
-    console.log(event.value);
-  }
-
   private generateButtons(container: HTMLDivElement): any {
     this.createTodayButton(container);
     this.createYesterdayButton(container);
@@ -184,30 +173,29 @@ export class EmployeeTableComponent implements OnInit, AfterViewInit {
     button.setAttribute('color', 'primary');
   }
 
+  // done
   private createTodayButton(container: HTMLDivElement): void {
     const today = document.createElement('button');
     const todayTxt = document.createTextNode('Today');
     today.onclick = () => {
-      this.startDateCtrl.setValue('2020-09-12T22:00:00.000Z');
-      this.endDateCtrl.setValue('2020-09-12T22:00:00.000Z');
-      this.range.markAsDirty();
-      // this.datepicker._goToDateInView(new Date(), 'month');
-      const todayx = new Date();
-      const future = new Date();
-      future.setDate(todayx.getDate() + 31);
-      // this.date = future;
-
+      const todayDate = new Date();
+      this.startDateCtrl.setValue(todayDate.toISOString());
+      this.endDateCtrl.setValue(todayDate.toISOString());
     };
     this.styleFilterBtns(today);
     today.appendChild(todayTxt);
     container.appendChild(today);
   }
 
+  // done
   private createYesterdayButton(container: HTMLDivElement): void {
     const yesterday = document.createElement('button');
     const yesterdayTxt = document.createTextNode('Yesterday');
     yesterday.onclick = () => {
-      // start end date lol
+      const yesterdayDate = new Date();
+      yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+      this.startDateCtrl.setValue(yesterdayDate.toISOString());
+      this.endDateCtrl.setValue(yesterdayDate.toISOString());
 
     };
     this.styleFilterBtns(yesterday);
@@ -215,72 +203,110 @@ export class EmployeeTableComponent implements OnInit, AfterViewInit {
     container.appendChild(yesterday);
   }
 
+  // done
   private createLast7DaysButton(container: HTMLDivElement): void {
-    const last7Days = document.createElement('button');
+    const last7DaysBtn = document.createElement('button');
     const last7DaysTxt = document.createTextNode('Last 7 days');
-    last7Days.onclick = () => {
-      // start end date lol
+    last7DaysBtn.onclick = () => {
+      const date = new Date();
+      const last = new Date(date.getTime() - (7 * 24 * 60 * 60 * 1000));
+      const day = last.getDate();
+      const month = last.getMonth();
+      const year = last.getFullYear();
 
+      this.startDateCtrl.setValue(new Date(year, month, day).toISOString());
+      this.endDateCtrl.setValue(new Date().toISOString());
     };
-    this.styleFilterBtns(last7Days);
-    last7Days.appendChild(last7DaysTxt);
-    container.appendChild(last7Days);
+    this.styleFilterBtns(last7DaysBtn);
+    last7DaysBtn.appendChild(last7DaysTxt);
+    container.appendChild(last7DaysBtn);
   }
 
   private createLastWeekButton(container: HTMLDivElement): void {
     const lastWeek = document.createElement('button');
     const lastWeekTxt = document.createTextNode('Last Week');
     lastWeek.onclick = () => {
-      // start end date lol
+      const beforeOneWeek = new Date(new Date().getTime() - 60 * 60 * 24 * 7 * 1000);
+      const day = beforeOneWeek.getDay();
+      const diffToMonday = beforeOneWeek.getDate() - day + (day === 0 ? -6 : 1);
+      const lastMonday = new Date(beforeOneWeek.setDate(diffToMonday));
+      const lastSunday = new Date(beforeOneWeek.setDate(diffToMonday + 6));
 
+      this.startDateCtrl.setValue(lastMonday.toISOString());
+      this.endDateCtrl.setValue(lastSunday.toISOString);
     };
     this.styleFilterBtns(lastWeek);
     lastWeek.appendChild(lastWeekTxt);
     container.appendChild(lastWeek);
   }
 
+  // done
   private createThisWeekButton(container: HTMLDivElement): void {
     const thisWeek = document.createElement('button');
     const thisWeekTxt = document.createTextNode('This Week');
     thisWeek.onclick = () => {
-      // start end date lol
+      const curr = new Date();
+      const first = curr.getDate() - curr.getDay();
+      const last = first + 6;
 
+      const firstday = new Date(curr.setDate(first)).toISOString();
+      const lastday = new Date(curr.setDate(last)).toISOString();
+
+      this.startDateCtrl.setValue(firstday);
+      this.endDateCtrl.setValue(lastday);
     };
     this.styleFilterBtns(thisWeek);
     thisWeek.appendChild(thisWeekTxt);
     container.appendChild(thisWeek);
   }
 
+  // done
   private createLastMonthButton(container: HTMLDivElement): void {
-    const lastMonth = document.createElement('button');
+    const lastMonthBtn = document.createElement('button');
     const lastMonthTxt = document.createTextNode('Last Month');
-    lastMonth.onclick = () => {
-      // start end date lol
-
+    lastMonthBtn.onclick = () => {
+      const element = document
+        .getElementsByClassName('mat-focus-indicator mat-calendar-previous-button mat-icon-button')[0] as HTMLElement;
+      element.click();
+      this.isLastClicked = true;
+      const firstDay = new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1);
+      const lastDay = new Date(new Date().getFullYear(), new Date().getMonth(), 0);
+      this.startDateCtrl.setValue(firstDay.toISOString());
+      this.endDateCtrl.setValue(lastDay.toISOString());
     };
-    this.styleFilterBtns(lastMonth);
-    lastMonth.appendChild(lastMonthTxt);
-    container.appendChild(lastMonth);
+    this.styleFilterBtns(lastMonthBtn);
+    lastMonthBtn.appendChild(lastMonthTxt);
+    container.appendChild(lastMonthBtn);
   }
 
+  // done
   private createThisMonth(container: HTMLDivElement): void {
     const thisMonthTxt = document.createTextNode('This Month');
     const thisMonth = document.createElement('button');
     thisMonth.onclick = () => {
-      // start end date lol
+      if (this.isLastClicked) {
+        const element = document
+          .getElementsByClassName('mat-focus-indicator mat-calendar-next-button mat-icon-button')[0] as HTMLElement;
+        element.click();
+      }
+      const firstDay = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+      const lastDay = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0);
 
+      this.startDateCtrl.setValue(firstDay.toISOString());
+      this.endDateCtrl.setValue(lastDay.toISOString());
     };
     this.styleFilterBtns(thisMonth);
     thisMonth.appendChild(thisMonthTxt);
     container.appendChild(thisMonth);
   }
 
+  // done
   private createCustomButton(container: HTMLDivElement): void {
     const custom = document.createElement('button');
     const customTxt = document.createTextNode('Custom');
     custom.onclick = () => {
-      // start end date lol
-
+      this.startDateCtrl.setValue('');
+      this.endDateCtrl.setValue('');
     };
     this.styleFilterBtns(custom);
     custom.appendChild(customTxt);

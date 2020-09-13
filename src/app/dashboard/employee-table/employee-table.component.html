@@ -15,13 +15,12 @@
     <div class="date-picker">
       <mat-form-field appearance="fill">
         <mat-label>Enter a date range</mat-label>
-        <mat-date-range-input [formGroup]="range" [rangePicker]="picker">
-          <input #startDate (dateChange)="startDateEmit($event)"  matStartDate formControlName="start" placeholder="Start date">
-          <input #endDate (dateChange)="endDateEmit($event)"  matEndDate formControlName="end" placeholder="End date">
+        <mat-date-range-input [comparisonEnd]="endDateCtrl.value" [comparisonStart]="startDateCtrl.value" [formGroup]="range" [rangePicker]="picker">
+          <input #startDate matStartDate formControlName="start" placeholder="Start date">
+          <input #endDate matEndDate formControlName="end" placeholder="End date">
         </mat-date-range-input>
         <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-        <mat-date-range-picker (opened)="opened(picker)" startView="month" #picker></mat-date-range-picker>
-        <!-- {{range.value | json}} -->
+        <mat-date-range-picker (opened)="opened()" startView="month" #picker></mat-date-range-picker>
 
         <mat-error *ngIf="range.controls.start.hasError('matStartDateInvalid')">Invalid start date</mat-error>
         <mat-error *ngIf="range.controls.end.hasError('matEndDateInvalid')">Invalid end date</mat-error>
