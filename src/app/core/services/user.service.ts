@@ -1,3 +1,4 @@
+import { User } from './../models/user.model';
 import { Employee } from './../models/employee.model';
 import { api } from './../models/api.model';
 import { Observable } from 'rxjs';
@@ -13,7 +14,7 @@ export class UserService {
     return this.appService.get(api.user.getAll);
   }
 
-  public createUser(userData: any): Observable<any> {
+  public createUser(userData: User): Observable<User> {
     return this.appService.post(api.user.create, userData);
   }
 

@@ -7,18 +7,13 @@
       <form class="register-form" [formGroup]="form">
         <mat-form-field appearance="standard" class="full-width">
           <mat-label>First Name</mat-label>
-          <input matInput formControlName="fname" placeholder="First name" name="fname" autocomplete="off" required>
+          <input matInput formControlName="name" placeholder="First name" name="name" autocomplete="off" required>
           <mat-error *ngIf="fnameControl.invalid">{{getFullNameErrorMessage()}}</mat-error>
         </mat-form-field>
         <mat-form-field appearance="standard" class="full-width">
           <mat-label>Last Name</mat-label>
-          <input matInput formControlName="lname" placeholder="Last Name" name="lname" autocomplete="off" required>
+          <input matInput formControlName="lastName" placeholder="Last Name" name="lastName" autocomplete="off" required>
           <mat-error *ngIf="lnameControl.invalid">{{getFullNameErrorMessage()}}</mat-error>
-        </mat-form-field>
-        <mat-form-field appearance="standard" class="full-width">
-          <mat-label>Address</mat-label>
-          <input matInput formControlName="addressLine" placeholder="Address" name="address" autocomplete="off" required>
-          <mat-error *ngIf="addressLineControl.invalid">{{getAddressLineErrorMessage()}}</mat-error>
         </mat-form-field>
         <mat-form-field appearance="standard" class="full-width">
           <mat-label>Email</mat-label>

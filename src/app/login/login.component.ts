@@ -57,7 +57,6 @@ export class LoginComponent implements OnInit {
     } else {
       this.handleFailedLogin({ err: 'Login credentials not correct' });
     }
-    this.loader.hide();
   }
 
   private handleFailedLogin(err: any): void {

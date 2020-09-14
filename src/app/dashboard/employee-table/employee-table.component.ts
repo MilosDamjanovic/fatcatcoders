@@ -4,8 +4,7 @@ import { Employee } from './../../core/models/employee.model';
 import { Component, OnInit, ViewChild, Input, Output, EventEmitter, ChangeDetectionStrategy, ElementRef, AfterViewInit } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
-import { MatCalendar, MatDateRangePicker } from '@angular/material/datepicker';
-import { MatButton } from '@angular/material/button';
+import { MatDateRangePicker } from '@angular/material/datepicker';
 import { DateAdapter } from '@angular/material/core';
 
 export interface IEmployeeFilter {
@@ -41,61 +40,85 @@ export class EmployeeTableComponent implements OnInit, AfterViewInit {
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   @ViewChild('picker', { static: false }) datepicker: MatDateRangePicker<Date>;
 
-  // date range picker
+  // date range picker form
   public range = new FormGroup({
+    employeeStatus: new FormControl(),
+    filter: new FormControl(),
     start: new FormControl(),
     end: new FormControl()
   });
+  public startDate = '';
+  public endDate = '';
+  public employeeStatus = false;
+  public filter = '';
 
-  date = new Date();
-
-  private isLastClicked = false;
+  private date = new Date();
+  private isLastClicked: boolean;
+  private startDateFilter: Date;
+  private endDateFilter: Date;
 
   public dataSource = new MatTableDataSource<any>([]);
   public displayedColumns: string[] = ['name', 'totalClockedInTime', 'totalProductiveTime',
     'totalUnProductiveTime', 'productivityRatio', 'edit'];
-  public filter: string;
   public isLoading = true;
-  public employeeStatus: boolean;
-  filterValues: any = {};
 
   ngOnInit() {
-    this.dataSource.filterPredicate = (data, filter: string) => {
-      const accumulator = (currentTerm, key) => {
-        return this.nestedFilterCheck(currentTerm, data, key);
-      };
-      if (this.startDateCtrl.value && this.endDateCtrl.value) {
-        return data.createdAt >= this.startDateCtrl.value && data.updatedAt <= this.endDateCtrl.value;
-      }
-      const dataStr = Object.keys(data).reduce(accumulator, '').toLowerCase();
-      const transformedFilter = filter.trim().toLowerCase();
-      return dataStr.indexOf(transformedFilter) !== -1;
-    };
+    this.dataSource.filterPredicate = this.getFilterPredicate();
     this._dateAdapter.setLocale('en-GB');
   }
 
-  applyFilter(filterValue: string | boolean) {
-    if (typeof filterValue !== 'boolean') {
-      this.dataSource.filter = filterValue.trim().toLowerCase();
-    } else {
-      this.dataSource.filter = filterValue + '';
-    }
-    if (this.dataSource.paginator) {
-      this.dataSource.paginator.firstPage();
-    }
+  public finishedSelection(): void {
+    this.applyFilter();
   }
 
-  nestedFilterCheck(search, data, key) {
-    if (typeof data[key] === 'object') {
-      for (const k in data[key]) {
-        if (data[key][k] !== null) {
-          search = this.nestedFilterCheck(search, data[key], k);
-        }
+  applyFilter() {
+    const startDate = this.startDateCtrl.value;
+    const endDate = this.endDateCtrl.value;
+    const employeeStatus = this.range.get('employeeStatus').value;
+    const filter = this.range.get('filter').value;
+
+    this.startDate = (startDate === null || startDate === '') ? '' : startDate.toDateString();
+    this.endDate = (endDate === null || endDate === '') ? '' : endDate.toDateString();
+    this.filter = filter === null ? '' : filter;
+    this.employeeStatus = employeeStatus === null ? '' : employeeStatus;
+
+    const filterValue = this.startDate + '$' + this.endDate + '$' + this.filter + '$' + this.employeeStatus;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+  }
+
+  getFilterPredicate() {
+    return (row: Employee, filters: string) => {
+      const filterArray = filters.split('$');
+      const startDate = new Date(filterArray[0]).getTime();
+      const endDate = new Date(filterArray[1]).getTime();
+      const filter = filterArray[2];
+      const employeeStatus = filterArray[3];
+
+      const matchFilter = [];
+
+      const columnStartDate = new Date(row.createdAt).getTime();
+      const columnEndDate = new Date(row.updatedAt).getTime();
+      const columnName = row.name;
+      const columnEmployeeStatus = `${row.status}`;
+
+      let customFilterStartDate: boolean;
+      let customFilterEndDate: boolean;
+      if (startDate || endDate) {
+        customFilterStartDate = columnStartDate >= startDate;
+        customFilterEndDate = columnEndDate <= endDate;
       }
-    } else {
-      search += data[key];
-    }
-    return search;
+      const customFilterEmployeeStatus = columnEmployeeStatus.toLowerCase().includes(employeeStatus);
+      const customFilterEmployeeName = columnName.toLowerCase().includes(filter);
+
+      if (customFilterStartDate || customFilterEndDate) {
+        matchFilter.push(customFilterStartDate);
+        matchFilter.push(customFilterEndDate);
+      }
+      matchFilter.push(customFilterEmployeeStatus);
+      matchFilter.push(customFilterEmployeeName);
+
+      return matchFilter.every(Boolean);
+    };
   }
 
   ngAfterViewInit(): void {
@@ -104,6 +127,9 @@ export class EmployeeTableComponent implements OnInit, AfterViewInit {
   }
 
   clearFilters() {
+    this.range.controls.filter.setValue('');
+    this.startDateCtrl.setValue('');
+    this.endDateCtrl.setValue('');
     this.dataSource.filter = '';
   }
 
@@ -126,10 +152,6 @@ export class EmployeeTableComponent implements OnInit, AfterViewInit {
       const element = document.getElementsByTagName('mat-datepicker-content');
       element[0].appendChild(container);
     });
-  }
-
-  public onSearchEmployeesKeyUp = (value: string) => {
-    this.dataSource.filter = value && value.trim().toLocaleLowerCase();
   }
 
   public sortData(sort: any): void {
@@ -179,6 +201,11 @@ export class EmployeeTableComponent implements OnInit, AfterViewInit {
     const todayTxt = document.createTextNode('Today');
     today.onclick = () => {
       const todayDate = new Date();
+
+      this.setEndDate(todayDate);
+      this.setStartDate(todayDate);
+      this.changeMonth();
+
       this.startDateCtrl.setValue(todayDate.toISOString());
       this.endDateCtrl.setValue(todayDate.toISOString());
     };
@@ -194,6 +221,12 @@ export class EmployeeTableComponent implements OnInit, AfterViewInit {
     yesterday.onclick = () => {
       const yesterdayDate = new Date();
       yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+
+      this.setStartDate(yesterdayDate)
+      this.setEndDate(yesterdayDate)
+
+      this.changeMonth();
+
       this.startDateCtrl.setValue(yesterdayDate.toISOString());
       this.endDateCtrl.setValue(yesterdayDate.toISOString());
 
@@ -214,6 +247,11 @@ export class EmployeeTableComponent implements OnInit, AfterViewInit {
       const month = last.getMonth();
       const year = last.getFullYear();
 
+      this.setStartDate(new Date(year, month, day));
+      this.setEndDate(new Date());
+
+      this.changeMonth();
+
       this.startDateCtrl.setValue(new Date(year, month, day).toISOString());
       this.endDateCtrl.setValue(new Date().toISOString());
     };
@@ -222,18 +260,28 @@ export class EmployeeTableComponent implements OnInit, AfterViewInit {
     container.appendChild(last7DaysBtn);
   }
 
+
   private createLastWeekButton(container: HTMLDivElement): void {
     const lastWeek = document.createElement('button');
     const lastWeekTxt = document.createTextNode('Last Week');
     lastWeek.onclick = () => {
-      const beforeOneWeek = new Date(new Date().getTime() - 60 * 60 * 24 * 7 * 1000);
-      const day = beforeOneWeek.getDay();
-      const diffToMonday = beforeOneWeek.getDate() - day + (day === 0 ? -6 : 1);
-      const lastMonday = new Date(beforeOneWeek.setDate(diffToMonday));
-      const lastSunday = new Date(beforeOneWeek.setDate(diffToMonday + 6));
+      const curr = new Date();
+      const diff = this.date.getDate() - this.date.getDay() + (this.date.getDay() === 0 ? -6 : 1);
+      const startOfWeek = new Date(this.date.setDate(diff));
 
-      this.startDateCtrl.setValue(lastMonday.toISOString());
-      this.endDateCtrl.setValue(lastSunday.toISOString);
+      const first = startOfWeek.getDate() - 7;
+      const last = startOfWeek.getDate() - 1;
+
+      const firstday = new Date(curr.setDate(first));
+      const lastday = new Date(curr.setDate(last));
+
+      this.setStartDate(firstday);
+      this.setEndDate(lastday);
+
+      this.changeMonth();
+
+      this.startDateCtrl.setValue(firstday.toISOString());
+      this.endDateCtrl.setValue(lastday.toISOString());
     };
     this.styleFilterBtns(lastWeek);
     lastWeek.appendChild(lastWeekTxt);
@@ -249,11 +297,15 @@ export class EmployeeTableComponent implements OnInit, AfterViewInit {
       const first = curr.getDate() - curr.getDay();
       const last = first + 6;
 
-      const firstday = new Date(curr.setDate(first)).toISOString();
-      const lastday = new Date(curr.setDate(last)).toISOString();
+      const firstday = new Date(curr.setDate(first));
+      const lastday = new Date(curr.setDate(last));
 
-      this.startDateCtrl.setValue(firstday);
-      this.endDateCtrl.setValue(lastday);
+      this.setStartDate(firstday);
+      this.setEndDate(lastday);
+      this.changeMonth();
+
+      this.startDateCtrl.setValue(firstday.toISOString());
+      this.endDateCtrl.setValue(lastday.toISOString());
     };
     this.styleFilterBtns(thisWeek);
     thisWeek.appendChild(thisWeekTxt);
@@ -265,12 +317,13 @@ export class EmployeeTableComponent implements OnInit, AfterViewInit {
     const lastMonthBtn = document.createElement('button');
     const lastMonthTxt = document.createTextNode('Last Month');
     lastMonthBtn.onclick = () => {
-      const element = document
-        .getElementsByClassName('mat-focus-indicator mat-calendar-previous-button mat-icon-button')[0] as HTMLElement;
-      element.click();
-      this.isLastClicked = true;
       const firstDay = new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1);
       const lastDay = new Date(new Date().getFullYear(), new Date().getMonth(), 0);
+
+      this.setStartDate(firstDay);
+      this.setEndDate(new Date());
+      this.changeMonth();
+
       this.startDateCtrl.setValue(firstDay.toISOString());
       this.endDateCtrl.setValue(lastDay.toISOString());
     };
@@ -284,13 +337,13 @@ export class EmployeeTableComponent implements OnInit, AfterViewInit {
     const thisMonthTxt = document.createTextNode('This Month');
     const thisMonth = document.createElement('button');
     thisMonth.onclick = () => {
-      if (this.isLastClicked) {
-        const element = document
-          .getElementsByClassName('mat-focus-indicator mat-calendar-next-button mat-icon-button')[0] as HTMLElement;
-        element.click();
-      }
       const firstDay = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
       const lastDay = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0);
+
+      this.setStartDate(firstDay);
+      this.setEndDate(lastDay);
+
+      this.changeMonth();
 
       this.startDateCtrl.setValue(firstDay.toISOString());
       this.endDateCtrl.setValue(lastDay.toISOString());
@@ -312,6 +365,24 @@ export class EmployeeTableComponent implements OnInit, AfterViewInit {
     custom.appendChild(customTxt);
     container.appendChild(custom);
   }
+
+  private changeMonth(): void {
+    if (this.startDateFilter.getMonth() === this.endDateFilter.getMonth() && !this.isLastClicked) { return; }
+    if (this.endDateFilter.getMonth() > this.startDateFilter.getMonth()) {
+      const previous = document
+        .getElementsByClassName('mat-focus-indicator mat-calendar-previous-button mat-icon-button')[0] as HTMLElement;
+      previous.click();
+      this.isLastClicked = true;
+    } else {
+      const next = document
+        .getElementsByClassName('mat-focus-indicator mat-calendar-next-button mat-icon-button')[0] as HTMLElement;
+      next.click();
+      this.isLastClicked = false;
+    }
+  }
+
+  private setStartDate = (startDate: Date) => this.startDateFilter = startDate;
+  private setEndDate = (endDate: Date) => this.endDateFilter = endDate;
 }
 function compare(a: number | string, b: number | string, isAsc: boolean) {
   return (a < b ? -1 : 1) * (isAsc ? 1 : -1);

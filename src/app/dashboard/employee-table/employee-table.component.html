@@ -1,86 +1,93 @@
 <div class="mat-elevation-z8 table-summary">
   <!-- This is the search box -->
   <div class="search-box">
-    <mat-form-field>
-      <mat-icon matPrefix>search</mat-icon>
-      <input type="text" matInput placeholder="Search employees" [(ngModel)]="filter" #ctrl="ngModel" autocomplete="off"
-        (keyup)="applyFilter($event.target.value);" />
-    </mat-form-field>
-    <span> </span>
-    <div class="filters">
-      <mat-checkbox [(ngModel)]="employeeStatus" (change)="applyFilter($event.checked)"> Filter inactive/deactivated
-      </mat-checkbox>
-      <button type="button" mat-button (click)="clearFilters($event)"> Clear Filters </button>
-    </div>
-    <div class="date-picker">
-      <mat-form-field appearance="fill">
-        <mat-label>Enter a date range</mat-label>
-        <mat-date-range-input [comparisonEnd]="endDateCtrl.value" [comparisonStart]="startDateCtrl.value" [formGroup]="range" [rangePicker]="picker">
-          <input #startDate matStartDate formControlName="start" placeholder="Start date">
-          <input #endDate matEndDate formControlName="end" placeholder="End date">
-        </mat-date-range-input>
-        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-        <mat-date-range-picker (opened)="opened()" startView="month" #picker></mat-date-range-picker>
+    <form [formGroup]="range">
 
-        <mat-error *ngIf="range.controls.start.hasError('matStartDateInvalid')">Invalid start date</mat-error>
-        <mat-error *ngIf="range.controls.end.hasError('matEndDateInvalid')">Invalid end date</mat-error>
+      <mat-form-field>
+        <mat-icon matPrefix>search</mat-icon>
+        <input type="text" matInput placeholder="Search employees" formControlName="filter" aria-label="Name"
+          autocomplete="off" (keyup)="applyFilter();" />
       </mat-form-field>
-    </div>
+
+      <section class="filters">
+        <mat-checkbox formControlName="employeeStatus" (change)="applyFilter($event.checked)"> Filter
+          inactive/deactivated
+        </mat-checkbox>
+        <button type="button" mat-button (click)="clearFilters($event)"> Clear Filters </button>
+      </section>
+
+      <section class="date-picker">
+        <mat-form-field appearance="fill">
+          <mat-label>Enter a date range</mat-label>
+          <mat-date-range-input [comparisonEnd]="endDateCtrl.value" [comparisonStart]="startDateCtrl.value"
+            [formGroup]="range" [rangePicker]="picker">
+            <input #startDate matStartDate formControlName="start" placeholder="Start date">
+            <input #endDate matEndDate formControlName="end" placeholder="End date">
+          </mat-date-range-input>
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-date-range-picker (opened)="opened()" (closed)="finishedSelection()" startView="month" #picker>
+          </mat-date-range-picker>
+
+          <mat-error *ngIf="range.controls.start.hasError('matStartDateInvalid')">Invalid start date</mat-error>
+          <mat-error *ngIf="range.controls.end.hasError('matEndDateInvalid')">Invalid end date</mat-error>
+        </mat-form-field>
+      </section>
+
+      <section class="table-data">
+        <mat-table [dataSource]="dataSource" matSort (matSortChange)="sortData($event)" matSortActive="name"
+          matSortDirection="asc" matSortDisableClear aria-label="Employees">
+          <!-- Name Column -->
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Name </th>
+            <td mat-cell *matCellDef="let employee"> {{employee.name}} </td>
+          </ng-container>
+
+          <!-- Total ClockedIn Time Column -->
+          <ng-container matColumnDef="totalClockedInTime">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Total ClockedIn Time </th>
+            <td mat-cell *matCellDef="let employee"> {{employee?.aggregateWorkDays.totalClockedInTime}} </td>
+          </ng-container>
+
+          <!-- Total Productive Time Column -->
+          <ng-container matColumnDef="totalProductiveTime">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Total Productive Time </th>
+            <td mat-cell *matCellDef="let employee"> {{employee?.aggregateWorkDays.totalProductiveTime}} </td>
+          </ng-container>
+
+          <!-- Total Unproductive Time Column -->
+          <ng-container matColumnDef="totalUnProductiveTime">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Total Unproductive Time </th>
+            <td mat-cell *matCellDef="let employee"> {{employee?.aggregateWorkDays.totalUnProductiveTime}} </td>
+          </ng-container>
+
+          <!-- Productivity ratio Column -->
+          <ng-container matColumnDef="productivityRatio">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Productivity ratio </th>
+            <td mat-cell *matCellDef="let employee">
+              {{employee?.aggregateWorkDays.totalProductiveTime / employee?.aggregateWorkDays.totalUnProductiveTime | number}}
+            </td>
+          </ng-container>
+
+          <!-- MORE! SHOW DETAILS TO BE ADDED  -->
+
+          <ng-container matColumnDef="edit">
+            <th mat-header-cell *matHeaderCellDef> Details </th>
+            <td mat-cell *matCellDef="let row">
+              <button mat-button (click)="selectEmployee(row)">See more details</button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          <tr mat-row *matNoDataRow>
+            <td class="mat-cell" colspan="9999">No data matching the filter</td>
+          </tr>
+
+        </mat-table>
+      </section>
+
+      <mat-paginator #paginator [length]="dataSource.data.length" [pageIndex]="0" [pageSize]="15"
+        [pageSizeOptions]="[15, 30, 50]">
+      </mat-paginator>
+    </form>
   </div>
-
-  <section class="table-data">
-      <mat-table [dataSource]="dataSource" matSort (matSortChange)="sortData($event)" matSortActive="name"
-        matSortDirection="asc" matSortDisableClear aria-label="Employees">
-        <!-- Name Column -->
-        <ng-container matColumnDef="name">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> Name </th>
-          <td mat-cell *matCellDef="let employee"> {{employee.name}} </td>
-        </ng-container>
-
-        <!-- Total ClockedIn Time Column -->
-        <ng-container matColumnDef="totalClockedInTime">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> Total ClockedIn Time </th>
-          <td mat-cell *matCellDef="let employee"> {{employee?.aggregateWorkDays.totalClockedInTime}} </td>
-        </ng-container>
-
-        <!-- Total Productive Time Column -->
-        <ng-container matColumnDef="totalProductiveTime">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> Total Productive Time </th>
-          <td mat-cell *matCellDef="let employee"> {{employee?.aggregateWorkDays.totalProductiveTime}} </td>
-        </ng-container>
-
-        <!-- Total Unproductive Time Column -->
-        <ng-container matColumnDef="totalUnProductiveTime">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> Total Unproductive Time </th>
-          <td mat-cell *matCellDef="let employee"> {{employee?.aggregateWorkDays.totalUnProductiveTime}} </td>
-        </ng-container>
-
-        <!-- Productivity ratio Column -->
-        <ng-container matColumnDef="productivityRatio">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> Productivity ratio </th>
-          <td mat-cell *matCellDef="let employee">
-            {{employee?.aggregateWorkDays.totalProductiveTime / employee?.aggregateWorkDays.totalUnProductiveTime | number}}
-          </td>
-        </ng-container>
-
-        <!-- MORE! SHOW DETAILS TO BE ADDED  -->
-
-        <ng-container matColumnDef="edit">
-          <th mat-header-cell *matHeaderCellDef> Details </th>
-          <td mat-cell *matCellDef="let row">
-            <button mat-button (click)="selectEmployee(row)">See more details</button>
-          </td>
-        </ng-container>
-
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-        <tr mat-row *matNoDataRow>
-          <td class="mat-cell" colspan="9999">No data matching the filter</td>
-        </tr>
-
-      </mat-table>
-  </section>
-  <mat-paginator #paginator [length]="dataSource.data.length" [pageIndex]="0" [pageSize]="15"
-    [pageSizeOptions]="[15, 30, 50]">
-  </mat-paginator>
-</div>

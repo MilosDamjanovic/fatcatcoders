@@ -27,12 +27,11 @@ export class RegisterComponent implements OnInit {
 
   private initForm(): FormGroup {
     return this.fb.group({
-      fname: ['', [Validators.required, Validators.minLength(3)]],
-      lname: ['', [Validators.required]],
+      name: ['', [Validators.required, Validators.minLength(3)]],
+      lastName: ['', [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(8), CustomValidators.passwordRules]],
       repeatPassword: ['', [Validators.required]],
-      addressLine: ['', [Validators.required]],
       gender: ['', [Validators.required]]
     }, { validator: CustomValidators.passwordConfirming});
   }
@@ -56,7 +55,8 @@ export class RegisterComponent implements OnInit {
       return;
     }
     this.loader.show();
-    this.userService.createUser(data).subscribe({
+    const userData = this.prepareUserData(data);
+    this.userService.createUser(userData).subscribe({
       next: this.handleSuccessRegistration.bind(this),
       error: this.handleFailedRegistration.bind(this)
     });
@@ -74,12 +74,6 @@ export class RegisterComponent implements OnInit {
   public getFullNameErrorMessage(): string {
     if (this.lnameControl.hasError('required') || this.fnameControl.hasError('required')) {
       return 'You must enter your firs and last name.';
-    }
-  }
-
-  public getAddressLineErrorMessage(): string {
-    if (this.addressLineControl.hasError('required')) {
-      return 'You must enter your address.';
     }
   }
 
@@ -101,7 +95,7 @@ export class RegisterComponent implements OnInit {
     }
   }
 
-  getRepeatPasswordErrorMessage(): string {
+  public getRepeatPasswordErrorMessage(): string {
     if (this.repeatPasswordControl.hasError('required')) {
       return 'You must enter your repeat password.';
     }
@@ -109,6 +103,17 @@ export class RegisterComponent implements OnInit {
       this.repeatPasswordControl.setErrors({invalid: true});
       return 'Repeat password doesn\'t match your password.';
     }
+  }
+
+  private prepareUserData(user: any): any {
+    const name = `${user.name} ${user.lastName}`;
+    return {
+      name,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      status: false,
+      id: Math.floor(100000000 + Math.random() * 900000000)
+    };
   }
 
   private handleSuccessRegistration(value: any): void {
@@ -135,16 +140,12 @@ export class RegisterComponent implements OnInit {
     return this.form.controls.password;
   }
 
-  get addressLineControl(): AbstractControl {
-    return this.form.controls.addressLine;
-  }
-
   get lnameControl(): AbstractControl {
-    return this.form.controls.lname;
+    return this.form.controls.lastName;
   }
 
   get fnameControl(): AbstractControl {
-    return this.form.controls.fname;
+    return this.form.controls.name;
   }
 
   get genderControl(): AbstractControl {
