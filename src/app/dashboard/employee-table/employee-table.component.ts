@@ -1,7 +1,7 @@
 import { FormGroup, FormControl, AbstractControl } from '@angular/forms';
 import { MatTableDataSource } from '@angular/material/table';
 import { Employee } from './../../core/models/employee.model';
-import { Component, OnInit, ViewChild, Input, Output, EventEmitter, ChangeDetectionStrategy, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewChild, Input, Output, EventEmitter, ChangeDetectionStrategy, AfterViewInit } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatDateRangePicker } from '@angular/material/datepicker';
@@ -26,7 +26,7 @@ export class EmployeeTableComponent implements OnInit, AfterViewInit {
     }
   }
 
-  constructor(private _dateAdapter: DateAdapter<any>) { }
+  constructor(private dateAdapter: DateAdapter<any>) { }
 
   public get startDateCtrl(): AbstractControl {
     return this.range.controls.start;
@@ -64,7 +64,7 @@ export class EmployeeTableComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.dataSource.filterPredicate = this.getFilterPredicate();
-    this._dateAdapter.setLocale('en-GB');
+    this.dateAdapter.setLocale('en-GB');
   }
 
   public finishedSelection(): void {
@@ -222,8 +222,8 @@ export class EmployeeTableComponent implements OnInit, AfterViewInit {
       const yesterdayDate = new Date();
       yesterdayDate.setDate(yesterdayDate.getDate() - 1);
 
-      this.setStartDate(yesterdayDate)
-      this.setEndDate(yesterdayDate)
+      this.setStartDate(yesterdayDate);
+      this.setEndDate(yesterdayDate);
 
       this.changeMonth();
 

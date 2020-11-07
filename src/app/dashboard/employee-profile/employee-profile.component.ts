@@ -1,3 +1,5 @@
+import { ReportsHelper } from './../../helper/reports';
+import { LoaderService } from './../../core/services/loader.service';
 import { Employee, EmployeeWorkSummary, EmployeeSummary } from './../../core/models/employee.model';
 import {
   Component, Input, Output, EventEmitter,
@@ -6,8 +8,6 @@ import {
 import { NgForm } from '@angular/forms';
 import { DatePipe } from '@angular/common';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
-import { LoaderService } from 'src/app/core/services/loader.service';
-import { ReportsHelper } from 'src/app/helper/reports';
 
 @Component({
   selector: 'ttd-employee-profile',

@@ -1,4 +1,4 @@
-name: Build
+name: E2E CI Test Pipeline
 on:
   push:
     branches:
@@ -6,29 +6,18 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-2019
+
     strategy:
       matrix:
         node-version: [12.x]
 
- steps:
-      - uses: actions/checkout@v1
-
-      - name: Cache node modules
-        uses: actions/cache@v1
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
-      - name: Node ${{ matrix.node-version }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-
-      - name: npm ci and npm run build
-        run: |
-          npm ci
-          npm run build:ci
-
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run e2e

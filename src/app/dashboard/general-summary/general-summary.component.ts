@@ -1,7 +1,6 @@
-import { EmployeeWorkSummary } from './../../core/models/employee.model';
 import { Component, Input, ChangeDetectionStrategy, SimpleChanges, OnChanges } from '@angular/core';
-import { EmployeeGeneralSummary } from 'src/app/core/models/employee.model';
-import { ReportsHelper } from 'src/app/helper/reports';
+import { ReportsHelper } from 'app/helper/reports';
+import { EmployeeGeneralSummary, EmployeeWorkSummary } from './../../core/models/employee.model';
 
 @Component({
   selector: 'ttd-general-summary',

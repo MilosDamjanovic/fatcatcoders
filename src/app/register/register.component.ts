@@ -51,7 +51,7 @@ export class RegisterComponent implements OnInit {
     const data = this.form.value;
     if (!this.form.valid) {
       this.validateAllFormFields(this.form);
-      this.handleFailedRegistration({message: 'Please fill out all of the required fields.'})
+      this.handleFailedRegistration({message: 'Please fill out all of the required fields.'});
       return;
     }
     this.loader.show();
