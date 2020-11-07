@@ -197,13 +197,6 @@
       "id": 45329366
     },
     {
-      "name": "Predovic",
-      "status": true,
-      "createdAt": "2005-05-06T03:20:58.509Z",
-      "updatedAt": "1964-12-04T13:35:48.528Z",
-      "id": 2636046
-    },
-    {
       "name": "Gutkowski",
       "status": false,
       "createdAt": "1960-03-04T14:37:45.042Z",
@@ -526,14 +519,11 @@
       "id": 12113080
     },
     {
-      "fname": "Miloš",
-      "lname": "Damjanović",
-      "email": "milos.damjanovic064@gmail.com",
-      "password": "Overlord.94",
-      "repeatPassword": "Overlord.94",
-      "addressLine": "Koce Kapetana 8",
-      "gender": "1",
-      "id": 99588973
+      "name": "Perislav Nekic",
+      "createdAt": "2020-09-14T21:17:49.597Z",
+      "updatedAt": "2020-09-14T21:17:49.597Z",
+      "status": false,
+      "id": 662032402
     }
   ],
   "time-tracks": [

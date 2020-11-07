@@ -4,8 +4,9 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
-    "test": "ng test",
+    "build:ci": "npm run clean && npm run test && npm run build:prod",
+    "test": "ng test --watch=false --browsers=ChromeHeadlessCustom",
+    "test:prod": "ng test --browsers=ChromeHeadless --watch=false --code-coverage",
     "lint": "ng lint",
     "e2e": "ng e2e",
     "start:proxy": "ng serve --proxy-config proxy.conf.json",
@@ -27,6 +28,7 @@
     "chart.js": "^2.9.3",
     "core-js": "^2.5.4",
     "json-server": "^0.16.1",
+    "puppeteer": "^5.4.1",
     "rxjs": "~6.6.2",
     "tslib": "^2.0.0",
     "zone.js": "~0.10.3"
